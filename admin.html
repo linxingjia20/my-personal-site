@@ -1,303 +1,87 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>后台管理 · 个人网站</title>
-  <!-- 后台不需要被搜索引擎收录 -->
-  <meta name="robots" content="noindex, nofollow">
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/admin.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>后台管理</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, "PingFang SC", sans-serif; }
+        body { background: #f4f6f8; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .container { background: #fff; padding: 40px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); width: 100%; max-width: 500px; display: none; }
+        .login-box { background: #fff; padding: 40px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); text-align: center; }
+        h2 { color: #333; margin-bottom: 20px; }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        label { display: block; margin-bottom: 8px; color: #666; font-weight: bold; }
+        input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; outline: none; transition: border 0.3s; }
+        input:focus, textarea:focus { border-color: #3498db; }
+        button { width: 100%; padding: 12px; background: #3498db; color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: background 0.3s; }
+        button:hover { background: #2980b9; }
+        .back-link { display: block; text-align: center; margin-top: 15px; color: #7f8c8d; text-decoration: none; font-size: 0.9rem; }
+    </style>
 </head>
-<body data-page="admin">
-
-  <!-- 轻提示容器（role=status 让读屏软件也能听到保存结果） -->
-  <div class="toast" data-mount="toast" role="status" aria-live="polite"></div>
-
-  <header class="topbar">
-    <div class="topbar__inner">
-      <a class="topbar__back" href="index.html">← 返回前台</a>
-      <h1 class="topbar__title">后台管理</h1>
-      <button class="btn btn--ghost btn--sm" type="button" data-action="logout" data-mount="logout" hidden>
-        退出登录
-      </button>
+<body>
+    <!-- 登录框 -->
+    <div class="login-box" id="loginBox">
+        <h2>🔒 后台管理登录</h2>
+        <div class="form-group">
+            <input type="password" id="passwordInput" placeholder="请输入管理密码 (提示：123456)">
+        </div>
+        <button onclick="login()">登录</button>
+        <a href="index.html" class="back-link">← 返回前台</a>
     </div>
-  </header>
 
-  <main class="admin">
-
-    <!-- ========== 状态一：未登录，只显示口令输入框 ========== -->
-    <section class="login" data-mount="login">
-      <form class="card login__card" data-form="login" novalidate>
-        <h2 class="login__title">请输入管理口令</h2>
-        <p class="login__hint">口令写在前端代码里，只用于防止误操作，不构成真正的安全防护。</p>
-
-        <label class="field">
-          <span class="field__label">口令</span>
-          <input class="field__input" type="password" data-field="password"
-                 autocomplete="current-password" placeholder="请输入口令">
-        </label>
-
-        <p class="alert" data-mount="login-error" role="alert" hidden></p>
-
-        <button class="btn btn--primary btn--block" type="submit">进入后台</button>
-      </form>
-    </section>
-
-    <!-- ========== 状态二：已登录，显示管理界面 ========== -->
-    <div data-mount="admin" hidden>
-      <div class="admin__grid">
-
-        <!-- 左侧：各个编辑面板 -->
-        <div class="admin__col">
-
-          <!-- ---------- ① 个人信息 ---------- -->
-          <section class="panel" aria-labelledby="profile-title">
-            <div class="panel__head">
-              <h2 class="panel__title" id="profile-title">个人信息</h2>
-              <p class="panel__desc">改完点击底部「保存修改」，前台刷新即可看到最新内容。</p>
-            </div>
-
-            <form class="panel__body" data-form="profile" novalidate>
-
-              <div class="grid-2">
-                <label class="field">
-                  <span class="field__label">姓名 <em class="req">*</em></span>
-                  <input class="field__input" type="text" data-field="name" maxlength="24" placeholder="张三">
-                  <span class="field__error" data-error="name" hidden></span>
-                </label>
-
-                <label class="field">
-                  <span class="field__label">头衔 <em class="req">*</em></span>
-                  <input class="field__input" type="text" data-field="headline" maxlength="40"
-                         placeholder="前端工程师 / 独立开发者">
-                  <span class="field__error" data-error="headline" hidden></span>
-                </label>
-              </div>
-
-              <label class="field">
-                <span class="field__label">一句话介绍</span>
-                <input class="field__input" type="text" data-field="tagline" maxlength="60"
-                       placeholder="做让人愿意多看一眼的界面。">
-                <span class="field__hint">显示在首屏姓名下方，最多 60 字。</span>
-                <span class="field__error" data-error="tagline" hidden></span>
-              </label>
-
-              <!-- 头像：文件选择 → 压缩成 dataURL → 存进隐藏字段 -->
-              <div class="field">
-                <span class="field__label">头像</span>
-                <div class="image-row">
-                  <div class="image-preview image-preview--avatar" data-mount="avatar-preview"></div>
-                  <div class="image-row__actions">
-                    <input class="file-input" type="file" accept="image/*" data-file="avatar" id="avatar-file">
-                    <label class="btn btn--ghost btn--sm" for="avatar-file">选择图片</label>
-                    <button class="btn btn--ghost btn--sm" type="button" data-action="clear-avatar">清除</button>
-                    <p class="field__hint">自动压缩到 512px 以内并转为 WebP，避免占满浏览器存储。留空则显示姓名首字母。</p>
-                  </div>
-                </div>
-                <input type="hidden" data-field="avatar">
-              </div>
-
-              <div class="grid-2">
-                <label class="field">
-                  <span class="field__label">邮箱 <em class="req">*</em></span>
-                  <input class="field__input" type="email" data-field="email" placeholder="hi@example.com">
-                  <span class="field__error" data-error="email" hidden></span>
-                </label>
-
-                <label class="field">
-                  <span class="field__label">所在城市</span>
-                  <input class="field__input" type="text" data-field="location" maxlength="30"
-                         placeholder="中国 · 杭州">
-                </label>
-              </div>
-
-              <label class="field">
-                <span class="field__label">简介</span>
-                <textarea class="field__input field__input--textarea" data-field="bio" rows="6"
-                          placeholder="第一段：我是谁、在做什么。&#10;&#10;第二段：最近在关注什么。"></textarea>
-                <span class="field__hint">用空行分段，前台会渲染成多个段落。</span>
-              </label>
-
-              <label class="field">
-                <span class="field__label">技能标签</span>
-                <input class="field__input" type="text" data-field="skills"
-                       placeholder="HTML, CSS, JavaScript（用逗号分隔）">
-                <span class="field__hint">最多 12 个，用逗号分隔。</span>
-              </label>
-
-              <!-- 社交链接：可增删的重复行 -->
-              <div class="field">
-                <span class="field__label">社交链接</span>
-                <div class="repeater" data-mount="socials"></div>
-                <p class="field__error" data-error="socials" hidden></p>
-                <div>
-                  <button class="btn btn--ghost btn--sm" type="button" data-action="add-social">＋ 添加一条</button>
-                </div>
-              </div>
-
-              <div class="panel__actions">
-                <button class="btn btn--primary" type="submit">保存修改</button>
-                <span class="dirty-flag" data-mount="dirty" hidden>有未保存的修改</span>
-              </div>
-            </form>
-          </section>
-
-          <!-- ---------- ② 项目管理 ---------- -->
-          <section class="panel" aria-labelledby="projects-admin-title">
-            <div class="panel__head panel__head--row">
-              <div>
-                <h2 class="panel__title" id="projects-admin-title">项目</h2>
-                <p class="panel__desc">顺序即展示顺序；勾选「置顶」的项目会排到前台最前面。</p>
-              </div>
-              <button class="btn btn--primary btn--sm" type="button" data-action="new-project">＋ 新增项目</button>
-            </div>
-
-            <div class="panel__body">
-              <p class="list-meta" data-mount="project-count"></p>
-              <ul class="plist" data-mount="project-list"></ul>
-            </div>
-          </section>
-
-          <!-- ---------- ③ 数据备份 ---------- -->
-          <section class="panel" aria-labelledby="backup-title">
-            <div class="panel__head">
-              <h2 class="panel__title" id="backup-title">数据备份</h2>
-              <p class="panel__desc">
-                内容只保存在当前浏览器里。清缓存、换设备、换访问地址都会看到"空的"网站，
-                所以建议录入完先导出一份备份。
-              </p>
-            </div>
-
-            <div class="panel__body">
-              <div class="btn-row">
-                <button class="btn btn--ghost" type="button" data-action="export">导出 JSON 备份</button>
-                <input class="file-input" type="file" accept="application/json,.json" data-file="import" id="import-file">
-                <label class="btn btn--ghost" for="import-file">导入 JSON 备份</label>
-              </div>
-
-              <hr class="divider">
-
-              <div class="danger-zone">
-                <div>
-                  <p class="danger-zone__title">恢复默认内容</p>
-                  <p class="field__hint">清空全部本地数据，回到内置的示例内容。此操作不可撤销。</p>
-                </div>
-                <button class="btn btn--danger btn--sm" type="button" data-action="reset">恢复默认</button>
-              </div>
-            </div>
-          </section>
-
+    <!-- 管理表单 -->
+    <div class="container" id="adminForm">
+        <h2>⚙️ 修改个人信息</h2>
+        <div class="form-group">
+            <label>姓名 / 昵称</label>
+            <input type="text" id="nameInput">
         </div>
-
-        <!-- 右侧：实时预览 -->
-        <aside class="admin__side">
-          <section class="panel panel--sticky">
-            <div class="panel__head">
-              <h2 class="panel__title">实时预览</h2>
-              <p class="panel__desc">输入时即时更新，保存后才写入本地。</p>
-            </div>
-            <div class="panel__body">
-              <div class="preview" data-mount="preview"></div>
-              <a class="btn btn--ghost btn--block btn--sm" href="index.html" target="_blank" rel="noopener noreferrer">
-                在新标签打开前台 ↗
-              </a>
-            </div>
-          </section>
-        </aside>
-
-      </div>
+        <div class="form-group">
+            <label>个人简介 (一句话)</label>
+            <input type="text" id="bioInput">
+        </div>
+        <div class="form-group">
+            <label>关于我 (详细介绍)</label>
+            <textarea id="aboutInput" rows="4"></textarea>
+        </div>
+        <button onclick="saveData()">保存并返回前台</button>
+        <a href="index.html" class="back-link">← 取消返回</a>
     </div>
-  </main>
 
-  <!-- ========== 项目编辑弹窗（原生 dialog，无第三方依赖） ========== -->
-  <dialog class="dialog" data-mount="project-dialog" aria-labelledby="dialog-title">
-    <form class="dialog__form" data-form="project" novalidate>
-      <header class="dialog__head">
-        <h2 class="dialog__title" id="dialog-title" data-mount="dialog-title">新增项目</h2>
-        <button class="btn btn--ghost btn--icon" type="button" data-action="close-dialog" aria-label="关闭">×</button>
-      </header>
+    <script>
+        // 简单的登录逻辑
+        function login() {
+            const pwd = document.getElementById('passwordInput').value;
+            if (pwd === '123456') {
+                document.getElementById('loginBox').style.display = 'none';
+                document.getElementById('adminForm').style.display = 'block';
+                loadData();
+            } else {
+                alert('密码错误！请重试。');
+            }
+        }
 
-      <div class="dialog__body">
-        <input type="hidden" data-field="p-id">
+        // 读取已有数据填入表单
+        function loadData() {
+            document.getElementById('nameInput').value = localStorage.getItem('site_name') || '';
+            document.getElementById('bioInput').value = localStorage.getItem('site_bio') || '';
+            document.getElementById('aboutInput').value = localStorage.getItem('site_about') || '';
+        }
 
-        <div class="grid-2">
-          <label class="field">
-            <span class="field__label">项目名称 <em class="req">*</em></span>
-            <input class="field__input" type="text" data-field="p-title" maxlength="40" placeholder="表情包生成器">
-            <span class="field__error" data-error="title" hidden></span>
-          </label>
+        // 保存数据
+        function saveData() {
+            const name = document.getElementById('nameInput').value;
+            const bio = document.getElementById('bioInput').value;
+            const about = document.getElementById('aboutInput').value;
 
-          <label class="field">
-            <span class="field__label">一句话摘要 <em class="req">*</em></span>
-            <input class="field__input" type="text" data-field="p-summary" maxlength="80"
-                   placeholder="上传图片，一键生成梗图">
-            <span class="field__error" data-error="summary" hidden></span>
-          </label>
-        </div>
+            localStorage.setItem('site_name', name);
+            localStorage.setItem('site_bio', bio);
+            localStorage.setItem('site_about', about);
 
-        <label class="field">
-          <span class="field__label">详细描述</span>
-          <textarea class="field__input field__input--textarea" data-field="p-description" rows="3"
-                    placeholder="可选，用来补充背景和你做了什么。"></textarea>
-        </label>
-
-        <div class="grid-2">
-          <label class="field">
-            <span class="field__label">在线地址</span>
-            <input class="field__input" type="url" data-field="p-link" placeholder="https://example.com">
-            <span class="field__error" data-error="link" hidden></span>
-          </label>
-
-          <label class="field">
-            <span class="field__label">源码地址</span>
-            <input class="field__input" type="url" data-field="p-repo" placeholder="https://github.com/you/repo">
-            <span class="field__error" data-error="repo" hidden></span>
-          </label>
-        </div>
-
-        <label class="field">
-          <span class="field__label">标签</span>
-          <input class="field__input" type="text" data-field="p-tags" placeholder="Canvas, 交互（用逗号分隔）">
-          <span class="field__hint">最多 6 个。</span>
-        </label>
-
-        <!-- 封面：既可以填图片地址，也可以点按钮选本地图片 -->
-        <div class="field">
-          <span class="field__label">封面图片</span>
-          <div class="image-row">
-            <div class="image-preview image-preview--wide" data-mount="cover-preview"></div>
-            <div class="image-row__actions">
-              <input class="file-input" type="file" accept="image/*" data-file="cover" id="cover-file">
-              <label class="btn btn--ghost btn--sm" for="cover-file">选择图片</label>
-              <button class="btn btn--ghost btn--sm" type="button" data-action="clear-cover">清除</button>
-              <p class="field__hint">不填则显示纯色占位块。</p>
-            </div>
-          </div>
-          <input class="field__input" type="text" data-field="p-cover" placeholder="或直接填写图片地址 https://...">
-          <span class="field__error" data-error="cover" hidden></span>
-        </div>
-
-        <label class="checkbox">
-          <input type="checkbox" data-field="p-featured">
-          <span>置顶（在前台排到最前面）</span>
-        </label>
-
-        <p class="alert" data-error="project" role="alert" hidden></p>
-      </div>
-
-      <footer class="dialog__foot">
-        <button class="btn btn--ghost" type="button" data-action="close-dialog">取消</button>
-        <button class="btn btn--primary" type="submit">保存项目</button>
-      </footer>
-    </form>
-  </dialog>
-
-  <!-- 脚本按依赖顺序加载：存储 → 视图工具 → 会话 → 管理逻辑 -->
-  <script src="js/storage.js" defer></script>
-  <script src="js/render.js" defer></script>
-  <script src="js/auth.js" defer></script>
-  <script src="js/admin.js" defer></script>
+            alert('保存成功！即将返回主页。');
+            window.location.href = 'index.html';
+        }
+    </script>
 </body>
 </html>
