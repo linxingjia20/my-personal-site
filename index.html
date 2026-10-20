@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>个人主页</title>
+  <meta name="description" content="个人主页：简介、技能与作品集。">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body data-page="site">
+
+  <!-- 键盘用户跳过导航，直接进入正文 -->
+  <a class="skip-link" href="#main">跳到主要内容</a>
+
+  <!-- 首屏：内容由 js/render.js 从 localStorage 读取后填充 -->
+  <header class="hero" data-mount="hero"></header>
+
+  <main id="main">
+
+    <!-- 关于我：标题写死在 HTML 里，保证 JS 失效时结构仍然可读 -->
+    <section class="section" aria-labelledby="about-title">
+      <h2 class="section__title" id="about-title">关于我</h2>
+      <div data-mount="about"></div>
+    </section>
+
+    <!-- 项目展示 -->
+    <section class="section" aria-labelledby="projects-title">
+      <div class="section__head">
+        <h2 class="section__title" id="projects-title">项目</h2>
+        <span class="section__count" data-mount="project-count"></span>
+      </div>
+      <div class="grid" data-mount="projects"></div>
+    </section>
+
+  </main>
+
+  <footer class="footer" data-mount="footer"></footer>
+
+  <!-- 普通脚本 + defer：按书写顺序在 DOM 解析完成后执行。
+       不使用 type="module"，否则用 file:// 直接打开会被浏览器拦截。 -->
+  <script src="js/storage.js" defer></script>
+  <script src="js/render.js" defer></script>
+</body>
+</html>
