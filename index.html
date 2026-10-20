@@ -1,46 +1,44 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>个人主页</title>
-  <meta name="description" content="个人主页：简介、技能与作品集。">
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/site.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的个人主页</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, "PingFang SC", sans-serif; }
+        body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; color: #333; }
+        .card { background: rgba(255,255,255,0.9); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 600px; width: 90%; text-align: center; }
+        h1 { color: #2c3e50; margin-bottom: 10px; font-size: 2.5rem; }
+        .subtitle { color: #7f8c8d; font-size: 1.2rem; margin-bottom: 30px; }
+        .section-title { font-size: 1.2rem; color: #34495e; border-bottom: 2px solid #3498db; display: inline-block; margin: 20px 0 15px; padding-bottom: 5px; }
+        p { line-height: 1.6; color: #555; margin-bottom: 15px; }
+        .admin-link { display: inline-block; margin-top: 30px; color: #3498db; text-decoration: none; font-size: 0.9rem; }
+        .admin-link:hover { text-decoration: underline; }
+    </style>
 </head>
-<body data-page="site">
+<body>
+    <div class="card">
+        <h1 id="display-name">你的名字</h1>
+        <p class="subtitle" id="display-bio">这是一个用于展示个人信息的副标题。</p>
+        
+        <div class="section-title">关于我</div>
+        <p id="display-about">这里是一段关于我的详细介绍。我是一个热爱技术、喜欢折腾的开发者。欢迎来到我的个人网站！</p>
+        
+        <div class="section-title">我的项目</div>
+        <p>1. 智能电商图片下载插件<br>2. 极简个人主页项目</p>
 
-  <!-- 键盘用户跳过导航，直接进入正文 -->
-  <a class="skip-link" href="#main">跳到主要内容</a>
+        <a href="admin.html" class="admin-link">进入后台管理 ⚙️</a>
+    </div>
 
-  <!-- 首屏：内容由 js/render.js 从 localStorage 读取后填充 -->
-  <header class="hero" data-mount="hero"></header>
+    <script>
+        // 读取本地存储的数据
+        const name = localStorage.getItem('site_name');
+        const bio = localStorage.getItem('site_bio');
+        const about = localStorage.getItem('site_about');
 
-  <main id="main">
-
-    <!-- 关于我：标题写死在 HTML 里，保证 JS 失效时结构仍然可读 -->
-    <section class="section" aria-labelledby="about-title">
-      <h2 class="section__title" id="about-title">关于我</h2>
-      <div data-mount="about"></div>
-    </section>
-
-    <!-- 项目展示 -->
-    <section class="section" aria-labelledby="projects-title">
-      <div class="section__head">
-        <h2 class="section__title" id="projects-title">项目</h2>
-        <span class="section__count" data-mount="project-count"></span>
-      </div>
-      <div class="grid" data-mount="projects"></div>
-    </section>
-
-  </main>
-
-  <footer class="footer" data-mount="footer"></footer>
-
-  <!-- 普通脚本 + defer：按书写顺序在 DOM 解析完成后执行。
-       不使用 type="module"，否则用 file:// 直接打开会被浏览器拦截。 -->
-  <script src="js/storage.js" defer></script>
-  <script src="js/render.js" defer></script>
+        if (name) document.getElementById('display-name').innerText = name;
+        if (bio) document.getElementById('display-bio').innerText = bio;
+        if (about) document.getElementById('display-about').innerText = about;
+    </script>
 </body>
 </html>
